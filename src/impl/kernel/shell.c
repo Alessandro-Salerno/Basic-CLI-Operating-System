@@ -2,17 +2,19 @@
 #include "print.h"
 #include "keyboard.h"
 #include "ostime.h"
+#include "ostypes.h"
 
 
-#define SHELL_FOREGROUND  PRINT_COLOR_WHITE
-#define SHELL_BACKGROUND  PRINT_COLOR_BLACK
-#define SHELL_CURSOR_CHAR ' '
+#define SHELL_FOREGROUND   PRINT_COLOR_WHITE
+#define SHELL_BACKGROUND   PRINT_COLOR_BLACK
+#define SHELL_CURSOR_CHAR  ' '
 #define SHELL_CURSOR_COLOR SHELL_FOREGROUND, SHELL_FOREGROUND
 
 
 static void shell_error(const char* errortext) {
     print_set_color(PRINT_COLOR_RED, SHELL_BACKGROUND);
     print_str("\n");
+    print_str("SHELL ERROR: ");
     print_str(errortext);
 }
 
@@ -24,75 +26,117 @@ static void shell_display_cursor(uint8_t _col, uint8_t _row) {
 }
 
 static void shell_dispatch_cursor(uint8_t _col, uint8_t _row) {
-    print_moveto(_col, _row);
-    print_set_color(SHELL_BACKGROUND, SHELL_BACKGROUND);
-    print_str(" ");
+    struct SCHAR _character = print_get_char_at(_col, _row);
+
+    if (_character.character == ' ') {
+        print_moveto(_col, _row);
+        print_set_color(SHELL_FOREGROUND, SHELL_BACKGROUND);
+        print_str(" ");
+    }
 }
 
 static int8_t shell_draw_cursor() {
     static uint8_t prevx, prevy;
     static uint8_t _col, _row;
 
-    prevx = _col;
-    prevy = _row;
-
     if (2 != print_get_console_handles(NULL, &_col, &_row)) {
-        shell_error("SHELL ERROR: Output Manager returned invalid handler\n");
+        shell_error("Output Manager returned invalid handler\n");
         return -1;
     }
 
-    if (prevy != _row) {
-        shell_dispatch_cursor(prevx, prevy);
-        print_moveto(_col, _row);
-    }
-
+    shell_dispatch_cursor(prevx, _row - 1);
+    print_moveto(_col, _row);
     shell_display_cursor(_col, _row);
+
+    prevx = _col;
+    prevy = _row;
 }
 
-static uint8_t shell_handle_input() {
-    char chr = 0;
-    char keycode = 0;
+static void shell_backspace() {
+    uint8_t _col, _row;
+    
+    print_get_console_handles(NULL, &_col, &_row);
+    print_moveto(_col - 1, _row);
+    print_str("  ");
+    print_moveto(_col - 1, _row);
+}
+
+static uint8_t shell_handle_input(uint8_t* _retchar) {
+    char _char = 0;
+    char _keycode = 0;
+
+    static uint8_t _shift = FALSE;
     uint8_t _col, _row;
 
-    while ((keycode = keyboard_read()) > 0) {
-        switch (keycode)
-        {
-            case KEY_ENTER:
-                print_str("\n");
-                break;
+    if (!((_keycode = keyboard_read()) > 0))
+        return 0;
+    
+    switch (_keycode) {
+        case KEY_ENTER: break;
+        case KEY_BACKSPACE: break;
+
+        case KEY_SHIFT:
+            _shift = TRUE;
+            break;
+        
+        default:
+            _char = char_scancode_to_ascii(_keycode);
+            print_char(_char = char_shift(_char, _shift));
+            if (_retchar != NULL) (*_retchar) = _char;
+            _shift = FALSE;
+            break;
+    }
+
+    shell_draw_cursor();
+    while (_keycode == keyboard_read())
+        continue;
+
+    return _keycode;
+}
+
+void shell_input(char* _buff, uint16_t _buffsize) {
+    char _keycode   = 0,
+         _char      = 0;
+    
+    uint16_t _index = 0;
+
+    while (((_keycode = shell_handle_input(&_char)) != KEY_ENTER) && _index < _buffsize) {
+        shell_draw_cursor();
+        
+        switch (_keycode) {
+            case 0: break;
 
             case KEY_BACKSPACE:
-                print_get_console_handles(NULL, &_col, &_row);
+                if (_index > 0) {
+                    _buff[_index] = '\0';
+                    _index--;
 
-                if (_col == 0)
-                    break;
-                
-                print_moveto(_col - 1, _row);
-                print_str("  ");
-                print_moveto(_col - 1, _row);
-                break;
-            
+                    shell_backspace();
+                } break;
+
             default:
-                chr = char_scancode_to_ascii(keycode);
-                print_char(chr);
+                _buff[_index] = _char;
+                _index++;
                 break;
         }
-
-        while (keycode == keyboard_read()) {
-            continue;
-        }
-
-        return keycode;
     }
+
+    print_char('\n');
+    shell_draw_cursor();
 }
 
 void shell_main() {
+    char _inputbuffer[256];
+
     while (TRUE) {
         print_set_color(SHELL_FOREGROUND, SHELL_BACKGROUND);
         print_str("\n$ ");
 
-        while (shell_handle_input() != KEY_ENTER)
-            if (-1 == shell_draw_cursor())
-                return;
+        for (int i = 0; i < 256; i++)
+            _inputbuffer[i] = '\0';
+        
+        shell_input(_inputbuffer, 256);
+        print_str(_inputbuffer);
+        print_str("\n");
     }
 }

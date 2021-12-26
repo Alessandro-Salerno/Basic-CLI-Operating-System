@@ -31,3 +31,4 @@ void print_set_color(uint8_t foreground, uint8_t background);
 void print_moveto(uint8_t x, uint8_t y);
 uint8_t print_get_console_handles(struct SCHAR** buff, uint8_t* c, uint8_t* r);
 uint8_t print_get_console_constants(uint8_t* num_cols, uint8_t* num_rows, uint8_t* start_column, uint8_t* start_row);
+struct SCHAR print_get_char_at(uint8_t col, uint8_t _row);

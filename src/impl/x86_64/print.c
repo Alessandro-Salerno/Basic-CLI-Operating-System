@@ -49,7 +49,7 @@ void print_newline() {
 }
 
 void print_char(char character) {
-    if (character == '\0' || character == NULL || character == 0)
+    if (character == '\0')
         return;
     
     if (character == '\n') {
@@ -86,9 +86,9 @@ void print_moveto(uint8_t x, uint8_t y) {
 uint8_t print_get_console_handles(struct SCHAR** buff, uint8_t* c, uint8_t* r) {
     uint8_t count = 0;
     
-    (count += buff != NULL) ? (*buff) = buffer : NULL;
-    (count += c    != NULL) ? (*c)    = col    : NULL;
-    (count += r    != NULL) ? (*r)    = row    : NULL;
+    if (count += buff != NULL) (*buff) = buffer;
+    if (count += c    != NULL) (*c)    = col;
+    if (count += r    != NULL) (*r)    = row;
 
     return count;
 }
@@ -96,10 +96,14 @@ uint8_t print_get_console_handles(struct SCHAR** buff, uint8_t* c, uint8_t* r) {
 uint8_t print_get_console_constants(uint8_t* num_cols, uint8_t* num_rows, uint8_t* start_column, uint8_t* start_row) {
     uint8_t count = 0;
     
-    (count += num_cols     != NULL) ? (*num_cols)     = NUM_COLS  : NULL;
-    (count += num_rows     != NULL) ? (*num_rows)     = NUM_ROWS  : NULL;
-    (count += start_column != NULL) ? (*start_column) = START_COL : NULL;
-    (count += start_row    != NULL) ? (*start_row)    = START_ROW : NULL;
+    if (count += num_cols     != NULL) (*num_cols)     = NUM_COLS;
+    if (count += num_rows     != NULL) (*num_rows)     = NUM_ROWS;
+    if (count += start_column != NULL) (*start_column) = START_COL;
+    if (count += start_row    != NULL) (*start_row)    = START_ROW;
 
     return count;
+}
+
+struct SCHAR print_get_char_at(uint8_t col, uint8_t _row) {
+    return buffer[col + NUM_COLS * row];
 }

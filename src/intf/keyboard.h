@@ -67,6 +67,7 @@
 #define KEY_DOWN 0x50
 #define KEY_END 0x4F
 #define KEY_ENTER 0x1C
+#define KEY_SHIFT 0x2A
 #define KEY_ESC 0x01
 #define KEY_HOME 0x47
 #define KEY_INSERT 0x52
@@ -86,4 +87,5 @@
 
 
 char char_scancode_to_ascii(uint8_t key_code);
+char char_shift(char chr, uint8_t _shift);
 char keyboard_read();
