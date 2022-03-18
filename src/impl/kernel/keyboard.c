@@ -1,5 +1,5 @@
 #include "keyboard.h"
-#include "interrupt.h"
+#include "io.h"
 
 
 char char_scancode_to_ascii(uint8_t _keycode) {
