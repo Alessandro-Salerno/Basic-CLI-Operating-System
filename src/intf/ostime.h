@@ -29,4 +29,4 @@ For more information, please refer to <https://unlicense.org>
 
 #include <stdint.h>
 
-void time_wait(uint32_t time);
+void time_wait(int time);

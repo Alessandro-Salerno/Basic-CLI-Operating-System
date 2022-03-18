@@ -28,7 +28,7 @@ For more information, please refer to <https://unlicense.org>
 #include "ostime.h"
 #include "ostypes.h"
 
-void time_wait(uint32_t time)
+void time_wait(int time)
 {
     while (true)
     {

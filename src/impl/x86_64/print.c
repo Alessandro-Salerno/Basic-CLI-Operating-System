@@ -35,22 +35,22 @@ static const int START_ROW = NUM_ROWS - 1;
 struct BIOSChar *buffer = (struct BIOSChar *)(0xB8000);
 static int col = START_COL;
 static int row = START_ROW;
-static uint8_t color = PRINT_COLOR_WHITE | PRINT_COLOR_BLACK << 4;
+static int color = PRINT_COLOR_WHITE | PRINT_COLOR_BLACK << 4;
 
-static void clear_row(uint8_t row)
+static void clear_row(int row)
 {
     struct BIOSChar empty = (struct BIOSChar){
         character : ' ',
         color : color,
     };
 
-    for (uint8_t c = 0; c < NUM_COLS; c++)
+    for (int c = 0; c < NUM_COLS; c++)
         buffer[c + NUM_COLS * row] = empty;
 }
 
 void print_clear()
 {
-    for (uint8_t i = 0; i < NUM_ROWS; i++)
+    for (int i = 0; i < NUM_ROWS; i++)
         clear_row(i);
 
     col = START_COL;
@@ -67,9 +67,9 @@ void print_newline()
         return;
     }
 
-    for (uint8_t r = 1; r < NUM_ROWS; r++)
+    for (int r = 1; r < NUM_ROWS; r++)
     {
-        for (uint8_t c = 0; c < NUM_COLS; c++)
+        for (int c = 0; c < NUM_COLS; c++)
         {
             struct BIOSChar character = buffer[c + NUM_COLS * r];
             buffer[c + NUM_COLS * (r - 1)] = character;
@@ -94,7 +94,7 @@ void print_char(char character)
         print_newline();
 
     buffer[col + NUM_COLS * row] = (struct BIOSChar){
-        character : (uint8_t)(character),
+        character : (int)(character),
         color : color,
     };
 
@@ -104,24 +104,24 @@ void print_char(char character)
 void print_str(const char *str)
 {
     char character;
-    for (uint64_t i = 0; (character = (uint8_t)(str[i])) != '\0'; i++)
+    for (uint64_t i = 0; (character = (int)(str[i])) != '\0'; i++)
         print_char(character);
 }
 
-void print_set_color(uint8_t foreground, uint8_t background)
+void print_set_color(int foreground, int background)
 {
     color = foreground + (background << 4);
 }
 
-void print_moveto(uint8_t x, uint8_t y)
+void print_moveto(int x, int y)
 {
     col = x;
     row = y;
 }
 
-uint8_t print_get_console_handles(struct BIOSChar **buff, uint8_t *c, uint8_t *r)
+int print_get_console_handles(struct BIOSChar **buff, int *c, int *r)
 {
-    uint8_t count = 0;
+    int count = 0;
 
     if (count += buff != NULL)
         (*buff) = buffer;
@@ -133,9 +133,9 @@ uint8_t print_get_console_handles(struct BIOSChar **buff, uint8_t *c, uint8_t *r
     return count;
 }
 
-uint8_t print_get_console_constants(uint8_t *num_cols, uint8_t *num_rows, uint8_t *start_column, uint8_t *start_row)
+int print_get_console_constants(int *num_cols, int *num_rows, int *start_column, int *start_row)
 {
-    uint8_t count = 0;
+    int count = 0;
 
     if (count += num_cols != NULL)
         (*num_cols) = NUM_COLS;
@@ -149,7 +149,7 @@ uint8_t print_get_console_constants(uint8_t *num_cols, uint8_t *num_rows, uint8_
     return count;
 }
 
-struct BIOSChar print_get_char_at(uint8_t col, uint8_t _row)
+struct BIOSChar print_get_char_at(int col, int _row)
 {
     return buffer[col + NUM_COLS * row];
 }

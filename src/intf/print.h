@@ -54,8 +54,8 @@ enum
 void print_clear();
 void print_char(char character);
 void print_str(const char *string);
-void print_set_color(uint8_t foreground, uint8_t background);
-void print_moveto(uint8_t x, uint8_t y);
-uint8_t print_get_console_handles(struct BIOSChar **buff, uint8_t *c, uint8_t *r);
-uint8_t print_get_console_constants(uint8_t *num_cols, uint8_t *num_rows, uint8_t *start_column, uint8_t *start_row);
-struct BIOSChar print_get_char_at(uint8_t col, uint8_t _row);
+void print_set_color(int foreground, int background);
+void print_moveto(int x, int y);
+int print_get_console_handles(struct BIOSChar **buff, int *c, int *r);
+int print_get_console_constants(int *num_cols, int *num_rows, int *start_column, int *start_row);
+struct BIOSChar print_get_char_at(int col, int _row);

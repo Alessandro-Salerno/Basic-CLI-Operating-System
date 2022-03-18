@@ -45,7 +45,7 @@ static void shell_error(const char *errortext)
     printf(errortext);
 }
 
-static void shell_display_cursor(uint8_t col, uint8_t row)
+static void shell_display_cursor(int col, int row)
 {
     textcolor(SHELL_CURSOR_COLOR);
     print_char(SHELL_CURSOR_CHAR);
@@ -53,7 +53,7 @@ static void shell_display_cursor(uint8_t col, uint8_t row)
     textcolor(SHELL_FOREGROUND, SHELL_BACKGROUND);
 }
 
-static void shell_dispatch_cursor(uint8_t col, uint8_t row)
+static void shell_dispatch_cursor(int col, int row)
 {
     struct BIOSChar _character = print_get_char_at(col, row);
 
@@ -65,10 +65,10 @@ static void shell_dispatch_cursor(uint8_t col, uint8_t row)
     }
 }
 
-static int8_t shell_draw_cursor()
+static int shell_draw_cursor()
 {
-    static uint8_t prevx, prevy;
-    static uint8_t col, row;
+    static int prevx, prevy;
+    static int col, row;
 
     if (2 != print_get_console_handles(NULL, &col, &row))
     {
@@ -86,7 +86,7 @@ static int8_t shell_draw_cursor()
 
 static void shell_backspace()
 {
-    uint8_t col, row;
+    int col, row;
 
     print_get_console_handles(NULL, &col, &row);
     gotoxy(col - 1, row);
@@ -94,13 +94,13 @@ static void shell_backspace()
     gotoxy(col - 1, row);
 }
 
-static uint8_t shell_handle_input(uint8_t *retchr)
+static int shell_handle_input(uint8_t *retchr)
 {
     char chr = 0;
     char kcode = 0;
 
     static uint8_t shiftPressed = false;
-    uint8_t col, row;
+    int col, row;
 
     if (!((kcode = keyboard_read()) > 0))
         return 0;
@@ -132,12 +132,12 @@ static uint8_t shell_handle_input(uint8_t *retchr)
     return kcode;
 }
 
-void shell_input(char *buffer, uint16_t buffersize)
+void shell_input(char *buffer, int buffersize)
 {
     char kcode = 0,
          chr = 0;
 
-    uint16_t index = 0;
+    int index = 0;
 
     while (((kcode = shell_handle_input(&chr)) != KEY_ENTER) && index < buffersize)
     {
