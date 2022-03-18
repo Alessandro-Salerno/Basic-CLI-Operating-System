@@ -30,6 +30,7 @@ For more information, please refer to <https://unlicense.org>
 #include "keyboard.h"
 #include "ostime.h"
 #include "ostypes.h"
+#include "easy.h"
 
 #define SHELL_FOREGROUND PRINT_COLOR_WHITE
 #define SHELL_BACKGROUND PRINT_COLOR_BLACK
@@ -38,73 +39,73 @@ For more information, please refer to <https://unlicense.org>
 
 static void shell_error(const char *errortext)
 {
-    print_set_color(PRINT_COLOR_RED, SHELL_BACKGROUND);
-    print_str("\n");
-    print_str("SHELL ERROR: ");
-    print_str(errortext);
+    textcolor(PRINT_COLOR_RED, SHELL_BACKGROUND);
+    printf("\n");
+    printf("SHELL ERROR: ");
+    printf(errortext);
 }
 
-static void shell_display_cursor(uint8_t _col, uint8_t _row)
+static void shell_display_cursor(uint8_t col, uint8_t row)
 {
-    print_set_color(SHELL_CURSOR_COLOR);
+    textcolor(SHELL_CURSOR_COLOR);
     print_char(SHELL_CURSOR_CHAR);
-    print_moveto(_col, _row);
-    print_set_color(SHELL_FOREGROUND, SHELL_BACKGROUND);
+    gotoxy(col, row);
+    textcolor(SHELL_FOREGROUND, SHELL_BACKGROUND);
 }
 
-static void shell_dispatch_cursor(uint8_t _col, uint8_t _row)
+static void shell_dispatch_cursor(uint8_t col, uint8_t row)
 {
-    struct SCHAR _character = print_get_char_at(_col, _row);
+    struct SCHAR _character = print_get_char_at(col, row);
 
     if (_character.character == ' ')
     {
-        print_moveto(_col, _row);
-        print_set_color(SHELL_FOREGROUND, SHELL_BACKGROUND);
-        print_str(" ");
+        gotoxy(col, row);
+        textcolor(SHELL_FOREGROUND, SHELL_BACKGROUND);
+        printf(" ");
     }
 }
 
 static int8_t shell_draw_cursor()
 {
     static uint8_t prevx, prevy;
-    static uint8_t _col, _row;
+    static uint8_t col, row;
 
-    if (2 != print_get_console_handles(NULL, &_col, &_row))
+    if (2 != print_get_console_handles(NULL, &col, &row))
     {
         shell_error("Output Manager returned invalid handler\n");
         return -1;
     }
 
-    shell_dispatch_cursor(prevx, _row - 1);
-    print_moveto(_col, _row);
-    shell_display_cursor(_col, _row);
+    shell_dispatch_cursor(prevx, row - 1);
+    gotoxy(col, row);
+    shell_display_cursor(col, row);
 
-    prevx = _col;
-    prevy = _row;
+    prevx = col;
+    prevy = row;
 }
 
 static void shell_backspace()
 {
-    uint8_t _col, _row;
+    uint8_t col, row;
 
-    print_get_console_handles(NULL, &_col, &_row);
-    print_moveto(_col - 1, _row);
-    print_str("  ");
-    print_moveto(_col - 1, _row);
+    print_get_console_handles(NULL, &col, &row);
+    gotoxy(col - 1, row);
+    printf("  ");
+    gotoxy(col - 1, row);
 }
 
-static uint8_t shell_handle_input(uint8_t *_retchar)
+static uint8_t shell_handle_input(uint8_t *retchr)
 {
-    char _char = 0;
-    char _keycode = 0;
+    char chr = 0;
+    char kcode = 0;
 
-    static uint8_t _shift = FALSE;
-    uint8_t _col, _row;
+    static uint8_t shiftPressed = FALSE;
+    uint8_t col, row;
 
-    if (!((_keycode = keyboard_read()) > 0))
+    if (!((kcode = keyboard_read()) > 0))
         return 0;
 
-    switch (_keycode)
+    switch (kcode)
     {
     case KEY_ENTER:
         break;
@@ -112,54 +113,54 @@ static uint8_t shell_handle_input(uint8_t *_retchar)
         break;
 
     case KEY_SHIFT:
-        _shift = TRUE;
+        shiftPressed = TRUE;
         break;
 
     default:
-        _char = char_scancode_to_ascii(_keycode);
-        print_char(_char = char_shift(_char, _shift));
-        if (_retchar != NULL)
-            (*_retchar) = _char;
-        _shift = FALSE;
+        chr = char_scancode_to_ascii(kcode);
+        print_char(chr = char_shift(chr, shiftPressed));
+        if (retchr != NULL)
+            (*retchr) = chr;
+        shiftPressed = FALSE;
         break;
     }
 
     shell_draw_cursor();
-    while (_keycode == keyboard_read())
+    while (kcode == keyboard_read())
         continue;
 
-    return _keycode;
+    return kcode;
 }
 
-void shell_input(char *_buff, uint16_t _buffsize)
+void shell_input(char *buffer, uint16_t buffersize)
 {
-    char _keycode = 0,
-         _char = 0;
+    char kcode = 0,
+         chr = 0;
 
-    uint16_t _index = 0;
+    uint16_t index = 0;
 
-    while (((_keycode = shell_handle_input(&_char)) != KEY_ENTER) && _index < _buffsize)
+    while (((kcode = shell_handle_input(&chr)) != KEY_ENTER) && index < buffersize)
     {
         shell_draw_cursor();
 
-        switch (_keycode)
+        switch (kcode)
         {
         case 0:
             break;
 
         case KEY_BACKSPACE:
-            if (_index > 0)
+            if (index > 0)
             {
-                _buff[_index] = '\0';
-                _index--;
+                buffer[index] = '\0';
+                index--;
 
                 shell_backspace();
             }
             break;
 
         default:
-            _buff[_index] = _char;
-            _index++;
+            buffer[index] = chr;
+            index++;
             break;
         }
     }
@@ -170,18 +171,18 @@ void shell_input(char *_buff, uint16_t _buffsize)
 
 void shell_main()
 {
-    char _inputbuffer[256];
+    char inputBuffer[256];
 
     while (TRUE)
     {
-        print_set_color(SHELL_FOREGROUND, SHELL_BACKGROUND);
-        print_str("\n$ ");
+        textcolor(SHELL_FOREGROUND, SHELL_BACKGROUND);
+        printf("\n$ ");
 
         for (int i = 0; i < 256; i++)
-            _inputbuffer[i] = '\0';
+            inputBuffer[i] = '\0';
 
-        shell_input(_inputbuffer, 256);
-        print_str(_inputbuffer);
-        print_str("\n");
+        scanf(inputBuffer, 256);
+        printf(inputBuffer);
+        printf("\n");
     }
 }
