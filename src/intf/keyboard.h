@@ -25,11 +25,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <https://unlicense.org>
 */
 
-
 #pragma once
 
 #include <stdint.h>
-
 
 #define KEYBOARD_PORT 0x60
 
@@ -112,7 +110,6 @@ For more information, please refer to <https://unlicense.org>
 #define KEY_SPACE 0x39
 #define KEY_TAB 0x0F
 #define KEY_UP 0x48
-
 
 char char_scancode_to_ascii(uint8_t key_code);
 char char_shift(char chr, uint8_t _shift);

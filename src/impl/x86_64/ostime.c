@@ -25,14 +25,14 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <https://unlicense.org>
 */
 
-
 #include "ostime.h"
 #include "ostypes.h"
 
-
-void time_wait(uint32_t time) {
-    while (TRUE) {
-        asm volatile ("nop");
+void time_wait(uint32_t time)
+{
+    while (TRUE)
+    {
+        asm volatile("nop");
         if (time-- <= 0)
             break;
     }

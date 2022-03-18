@@ -25,15 +25,13 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <https://unlicense.org>
 */
 
-
 #pragma once
 
 #include "print.h"
 #include "ostypes.h"
 #include "shell.h"
 
-
-void printf(const char* text);
-void scanf(char* buffer, int buffersize);
+void printf(const char *text);
+void scanf(char *buffer, int buffersize);
 void gotoxy(int x, int y);
 void textcolor(int foreground, int background);

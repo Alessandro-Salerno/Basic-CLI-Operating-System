@@ -25,10 +25,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <https://unlicense.org>
 */
 
-
 #pragma once
 
 #include <stdint.h>
-
 
 void time_wait(uint32_t time);

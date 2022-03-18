@@ -25,7 +25,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <https://unlicense.org>
 */
 
-
 #pragma once
 
 #include <stdint.h>
@@ -33,8 +32,8 @@ For more information, please refer to <https://unlicense.org>
 #define TRUE 1
 #define FALSE 0
 
-
-struct SCHAR {
+struct SCHAR
+{
     uint8_t character;
     uint8_t color;
 };
