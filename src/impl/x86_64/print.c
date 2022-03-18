@@ -27,14 +27,14 @@ For more information, please refer to <https://unlicense.org>
 
 #include "print.h"
 
-static const size_t NUM_COLS = 80;
-static const size_t NUM_ROWS = 25;
-static const size_t START_COL = 0;
-static const size_t START_ROW = NUM_ROWS - 1;
+static const int NUM_COLS = 80;
+static const int NUM_ROWS = 25;
+static const int START_COL = 0;
+static const int START_ROW = NUM_ROWS - 1;
 
 struct SCHAR *buffer = (struct SCHAR *)(0xB8000);
-static uint8_t col = START_COL;
-static uint8_t row = START_ROW;
+static int col = START_COL;
+static int row = START_ROW;
 static uint8_t color = PRINT_COLOR_WHITE | PRINT_COLOR_BLACK << 4;
 
 static void clear_row(uint8_t row)
