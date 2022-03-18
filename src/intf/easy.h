@@ -28,12 +28,12 @@ For more information, please refer to <https://unlicense.org>
 
 #pragma once
 
-#include <stdint.h>
+#include "print.h"
+#include "ostypes.h"
+#include "shell.h"
 
 
-static void shell_error(const char* errortext);
-static void shell_display_cursor(uint8_t _col, uint8_t _row);
-static void shell_dispatch_cursor(uint8_t _col, uint8_t _row);
-static int8_t draw_cursor();
-void shell_main();
-void shell_input(char* _buff, uint16_t _buffsize);
+void printf(const char* text);
+void scanf(char* buffer, int buffersize);
+void gotoxy(int x, int y);
+void textcolor(int foreground, int background);
