@@ -30,7 +30,7 @@ For more information, please refer to <https://unlicense.org>
 
 void time_wait(uint32_t time)
 {
-    while (TRUE)
+    while (true)
     {
         asm volatile("nop");
         if (time-- <= 0)

@@ -55,7 +55,7 @@ static void shell_display_cursor(uint8_t col, uint8_t row)
 
 static void shell_dispatch_cursor(uint8_t col, uint8_t row)
 {
-    struct SCHAR _character = print_get_char_at(col, row);
+    struct BIOSChar _character = print_get_char_at(col, row);
 
     if (_character.character == ' ')
     {
@@ -99,7 +99,7 @@ static uint8_t shell_handle_input(uint8_t *retchr)
     char chr = 0;
     char kcode = 0;
 
-    static uint8_t shiftPressed = FALSE;
+    static uint8_t shiftPressed = false;
     uint8_t col, row;
 
     if (!((kcode = keyboard_read()) > 0))
@@ -113,7 +113,7 @@ static uint8_t shell_handle_input(uint8_t *retchr)
         break;
 
     case KEY_SHIFT:
-        shiftPressed = TRUE;
+        shiftPressed = true;
         break;
 
     default:
@@ -121,7 +121,7 @@ static uint8_t shell_handle_input(uint8_t *retchr)
         print_char(chr = char_shift(chr, shiftPressed));
         if (retchr != NULL)
             (*retchr) = chr;
-        shiftPressed = FALSE;
+        shiftPressed = false;
         break;
     }
 
@@ -173,7 +173,7 @@ void shell_main()
 {
     char inputBuffer[256];
 
-    while (TRUE)
+    while (true)
     {
         textcolor(SHELL_FOREGROUND, SHELL_BACKGROUND);
         printf("\n$ ");

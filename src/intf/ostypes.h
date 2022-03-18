@@ -29,10 +29,10 @@ For more information, please refer to <https://unlicense.org>
 
 #include <stdint.h>
 
-#define TRUE 1
-#define FALSE 0
+#define true 1
+#define false 0
 
-struct SCHAR
+struct BIOSChar
 {
     uint8_t character;
     uint8_t color;

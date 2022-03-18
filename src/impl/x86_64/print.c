@@ -32,14 +32,14 @@ static const int NUM_ROWS = 25;
 static const int START_COL = 0;
 static const int START_ROW = NUM_ROWS - 1;
 
-struct SCHAR *buffer = (struct SCHAR *)(0xB8000);
+struct BIOSChar *buffer = (struct BIOSChar *)(0xB8000);
 static int col = START_COL;
 static int row = START_ROW;
 static uint8_t color = PRINT_COLOR_WHITE | PRINT_COLOR_BLACK << 4;
 
 static void clear_row(uint8_t row)
 {
-    struct SCHAR empty = (struct SCHAR){
+    struct BIOSChar empty = (struct BIOSChar){
         character : ' ',
         color : color,
     };
@@ -71,7 +71,7 @@ void print_newline()
     {
         for (uint8_t c = 0; c < NUM_COLS; c++)
         {
-            struct SCHAR character = buffer[c + NUM_COLS * r];
+            struct BIOSChar character = buffer[c + NUM_COLS * r];
             buffer[c + NUM_COLS * (r - 1)] = character;
         }
     }
@@ -93,7 +93,7 @@ void print_char(char character)
     if (col > NUM_COLS)
         print_newline();
 
-    buffer[col + NUM_COLS * row] = (struct SCHAR){
+    buffer[col + NUM_COLS * row] = (struct BIOSChar){
         character : (uint8_t)(character),
         color : color,
     };
@@ -119,7 +119,7 @@ void print_moveto(uint8_t x, uint8_t y)
     row = y;
 }
 
-uint8_t print_get_console_handles(struct SCHAR **buff, uint8_t *c, uint8_t *r)
+uint8_t print_get_console_handles(struct BIOSChar **buff, uint8_t *c, uint8_t *r)
 {
     uint8_t count = 0;
 
@@ -149,7 +149,7 @@ uint8_t print_get_console_constants(uint8_t *num_cols, uint8_t *num_rows, uint8_
     return count;
 }
 
-struct SCHAR print_get_char_at(uint8_t col, uint8_t _row)
+struct BIOSChar print_get_char_at(uint8_t col, uint8_t _row)
 {
     return buffer[col + NUM_COLS * row];
 }
