@@ -23,6 +23,7 @@
 
 # For more information, please refer to <https://unlicense.org>
 
+WORKING_DIRECTORY    = "$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))"
 
 kernel_source_files := $(shell find src/impl/kernel -name *.c)
 kernel_object_files := $(patsubst src/impl/kernel/%.c, build/kernel/%.o, $(kernel_source_files))
@@ -58,7 +59,7 @@ setup:
 	docker build buildenv -t myos-builden
 
 enter:
-	sudo docker run --rm -it -v "$(pwd)":/root/env myos-buildenv
+	docker run --rm -it -v "$(WORKING_DIRECTORY)":/root/env myos-buildenv
 
 run:
 	qemu-system-x86_64 -cdrom dist/x86_64/kernel.iso
