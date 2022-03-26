@@ -44,4 +44,5 @@ void kernel_main()
     printf("Basic Kernel v0.0.4!\n\n");
 
     shell_main();
+    while (true);
 }

@@ -56,7 +56,7 @@ build-x86_64: $(kernel_object_files) $(x86_64_object_files)
 	grub-mkrescue /usr/lib/grub/i386-pc -o dist/x86_64/kernel.iso targets/x86_64/iso
 
 setup:
-	docker build buildenv -t myos-builden
+	docker build buildenv -t myos-buildenv
 
 enter:
 	docker run --rm -it -v "$(WORKING_DIRECTORY)":/root/env myos-buildenv
